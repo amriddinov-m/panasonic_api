@@ -13,9 +13,9 @@ class LoginView(APIView):
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
-            email = serializer.validated_data['email']
+            phone = serializer.validated_data['phone']
             password = serializer.validated_data['password']
-            user = authenticate(email=email, password=password)
+            user = authenticate(phone=phone, password=password)
             if user is not None:
                 if user.status != 'active':
                     return Response({'error': 'Awaiting confirmation'}, status=status.HTTP_403_FORBIDDEN)

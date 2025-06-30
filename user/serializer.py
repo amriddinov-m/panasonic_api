@@ -4,7 +4,7 @@ from user.models import User
 
 
 class LoginSerializer(serializers.Serializer):
-    email = serializers.CharField()
+    phone = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
 
