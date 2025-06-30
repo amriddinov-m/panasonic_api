@@ -59,7 +59,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         report = 'report', 'Отчетность'
 
 
-    email = models.EmailField(unique=True, blank=True)
+    email = models.EmailField(unique=True, blank=True, null=True)
     role = models.CharField(max_length=255, choices=Role.choices, default=Role.user)
     first_name = models.CharField(max_length=255, null=True)
     last_name = models.CharField(max_length=255, null=True)
