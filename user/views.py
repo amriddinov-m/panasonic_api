@@ -12,13 +12,14 @@ from user.serializer import LoginSerializer, UserSerializer
 class LoginView(APIView):
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
+
         if serializer.is_valid():
             phone = serializer.validated_data['phone']
             password = serializer.validated_data['password']
             user = authenticate(phone=phone, password=password)
             if user is not None:
-                if user.status != 'active':
-                    return Response({'error': 'Awaiting confirmation'}, status=status.HTTP_403_FORBIDDEN)
+                # if user.status != 'active':
+                #     return Response({'error': 'Awaiting confirmation'}, status=status.HTTP_403_FORBIDDEN)
                 refresh = RefreshToken.for_user(user)
                 return Response({
                     'refresh': str(refresh),
