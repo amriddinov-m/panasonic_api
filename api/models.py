@@ -99,6 +99,12 @@ class WarehouseProduct(models.Model):
 
 
 class Income(models.Model):
+    class Status(models.TextChoices):
+        pending = 'pending', 'В ожидании'
+        active = 'active', 'Активный'
+        finished = 'finished', 'Закончен'
+        cancelled = 'cancelled', 'Отменен'
+
     client = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='Клиент',
                                related_name='income_client')
     created = models.DateTimeField(auto_now_add=True)
@@ -106,7 +112,8 @@ class Income(models.Model):
     user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='Пользователь',
                              related_name='income_user')
     comment = models.TextField(verbose_name='Коммент')
-    status = models.CharField(max_length=255, verbose_name='Статус', null=True)
+    status = models.CharField(max_length=255, verbose_name='Статус',
+                              choices=Status.choices, default=Status.pending, null=True)
     total_amount = models.IntegerField(verbose_name='Общая сумма', default=0)
 
     def __str__(self):
