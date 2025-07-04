@@ -53,14 +53,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         disable = 'disable', 'Отключен'
 
     class Role(models.TextChoices):
-        user = 'user', 'Обычный'
+        provider = 'provider', 'Провайдер'
         admin = 'admin', 'Админ'
-        manager = 'manager', 'Менеджер'
-        report = 'report', 'Отчетность'
+        dealer = 'dealer', 'Дилер'
 
 
     email = models.EmailField(unique=True, blank=True, null=True)
-    role = models.CharField(max_length=255, choices=Role.choices, default=Role.user)
+    role = models.CharField(max_length=255, choices=Role.choices, default=Role.provider)
     first_name = models.CharField(max_length=255, null=True)
     last_name = models.CharField(max_length=255, null=True)
     phone_number = models.CharField(max_length=50, blank=True, unique=True)
