@@ -46,6 +46,7 @@ class IncomeSerializer(serializers.ModelSerializer):
     user_fullname = serializers.SerializerMethodField()
     client_fullname = serializers.SerializerMethodField()
     status_value = serializers.SerializerMethodField()
+
     class Meta:
         model = Income
         fields = '__all__'
@@ -60,7 +61,6 @@ class IncomeSerializer(serializers.ModelSerializer):
         return obj.get_status_display()
 
 
-
 class IncomeItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = IncomeItem
@@ -68,9 +68,22 @@ class IncomeItemSerializer(serializers.ModelSerializer):
 
 
 class OutcomeSerializer(serializers.ModelSerializer):
+    user_fullname = serializers.SerializerMethodField()
+    client_fullname = serializers.SerializerMethodField()
+    status_value = serializers.SerializerMethodField()
+
     class Meta:
         model = Outcome
         fields = '__all__'
+
+    def get_user_fullname(self, obj):
+        return obj.user.get_full_name()
+
+    def get_client_fullname(self, obj):
+        return obj.client.get_full_name()
+
+    def get_status_value(self, obj):
+        return obj.get_status_display()
 
 
 class OutcomeItemSerializer(serializers.ModelSerializer):
