@@ -115,6 +115,11 @@ class OutcomeSerializer(serializers.ModelSerializer):
 
 
 class OutcomeItemSerializer(serializers.ModelSerializer):
+    product_name = serializers.SerializerMethodField()
+
     class Meta:
         model = OutcomeItem
         fields = '__all__'
+
+    def get_product_name(self, obj):
+        return obj.product.name
