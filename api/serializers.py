@@ -66,7 +66,7 @@ class IncomeSerializer(serializers.ModelSerializer):
 
         instance = super().update(instance, validated_data)
 
-        if old_status != 'finish' and new_status == 'finish':
+        if old_status != 'finished' and new_status == 'finished':
             self.create_or_update_product(instance)
 
         return instance
