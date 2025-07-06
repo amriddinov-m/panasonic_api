@@ -37,9 +37,14 @@ class WarehouseSerializer(serializers.ModelSerializer):
 
 
 class WarehouseProductSerializer(serializers.ModelSerializer):
+    product_name = serializers.SerializerMethodField()
+
     class Meta:
         model = WarehouseProduct
         fields = '__all__'
+
+    def get_product_name(self, obj):
+        return obj.product.name
 
 
 class IncomeSerializer(serializers.ModelSerializer):
@@ -77,7 +82,8 @@ class IncomeSerializer(serializers.ModelSerializer):
             warehouse_product, created = WarehouseProduct.objects.get_or_create(
                 product=income_item.product,
                 defaults={'count': income_item.count,
-                          'unit_type': income_item.unit_type}
+                          'unit_type': income_item.unit_type,
+                          'price': income_item.price,}
             )
             if not created:
                 warehouse_product.count += income_item.count

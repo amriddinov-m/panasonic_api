@@ -1,10 +1,15 @@
 from django.contrib import admin
 
-from api.models import Status, Income, Outcome, Product, UnitType, ProductCategory
+from api.models import Status, Income, Outcome, Product, UnitType, ProductCategory, IncomeItem, WarehouseProduct
 
 
 @admin.register(Status)
 class StatusAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(WarehouseProduct)
+class WarehouseProductAdmin(admin.ModelAdmin):
     pass
 
 
@@ -25,6 +30,11 @@ class UnitTypeAdmin(admin.ModelAdmin):
 
 @admin.register(Income)
 class IncomeAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(IncomeItem)
+class IncomeItemAdmin(admin.ModelAdmin):
     pass
 
 
