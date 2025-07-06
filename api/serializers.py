@@ -85,9 +85,14 @@ class IncomeSerializer(serializers.ModelSerializer):
 
 
 class IncomeItemSerializer(serializers.ModelSerializer):
+    product_name = serializers.SerializerMethodField()
+
     class Meta:
         model = IncomeItem
         fields = '__all__'
+
+    def get_product_name(self, obj):
+        return obj.product.name
 
 
 class OutcomeSerializer(serializers.ModelSerializer):
