@@ -77,8 +77,7 @@ class IncomeSerializer(serializers.ModelSerializer):
             warehouse_product, created = WarehouseProduct.objects.get_or_create(
                 product=income_item.product,
                 defaults={'count': income_item.count,
-                          'unit_type': income_item.unit_type,
-                          'price': income_item.price,}
+                          'unit_type': income_item.unit_type}
             )
             if not created:
                 warehouse_product.count += income_item.count

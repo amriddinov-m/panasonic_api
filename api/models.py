@@ -87,6 +87,7 @@ class WarehouseProduct(models.Model):
     count = models.IntegerField(verbose_name='Кол-во')
     unit_type = models.ForeignKey('UnitType', on_delete=models.CASCADE, verbose_name='Ед. изм')
     status = models.CharField(max_length=255, verbose_name='Статус', null=True)
+    price = models.DecimalField(decimal_places=2, max_digits=10, verbose_name='Цена', default=0)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='Пользователь', null=True)
