@@ -74,14 +74,14 @@ class IncomeSerializer(serializers.ModelSerializer):
     def create_or_update_product(self, income):
         income_items = IncomeItem.objects.filter(income=income)
         for income_item in income_items:
-            product = income_item.product
-            count = income_item.count
             warehouse_product, created = WarehouseProduct.objects.get_or_create(
-                product=product,
-                defaults={'count': count}
+                product=income_item.product,
+                defaults={'count': income_item.count,
+                          'unit_type': income_item.unit_type,
+                          'price': income_item.price,}
             )
             if not created:
-                warehouse_product.count += count
+                warehouse_product.count += income_item.count
                 warehouse_product.save()
 
 

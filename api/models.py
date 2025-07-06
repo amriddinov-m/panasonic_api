@@ -83,13 +83,13 @@ class Warehouse(models.Model):
 
 class WarehouseProduct(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт')
-    warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE, verbose_name='Склад')
+    warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE, verbose_name='Склад', null=True)
     count = models.IntegerField(verbose_name='Кол-во')
     unit_type = models.ForeignKey('UnitType', on_delete=models.CASCADE, verbose_name='Ед. изм')
     status = models.CharField(max_length=255, verbose_name='Статус', null=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='Пользователь')
+    user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='Пользователь', null=True)
 
     def __str__(self):
         return f'{self.product.name} - {self.count} {self.unit_type}'
@@ -131,9 +131,9 @@ class IncomeItem(models.Model):
     count = models.IntegerField(verbose_name='Кол-во')
     unit_type = models.ForeignKey('UnitType', on_delete=models.CASCADE, verbose_name='Ед. изм')
     price = models.DecimalField(decimal_places=2, max_digits=10, verbose_name='Цена')
-    comment = models.TextField(verbose_name='Коммент')
+    comment = models.TextField(verbose_name='Коммент', null=True)
     status = models.CharField(max_length=255, verbose_name='Статус', null=True)
-    user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='Пользователь')
+    user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='Пользователь', null=True)
 
     def __str__(self):
         return f'{self.id}'
