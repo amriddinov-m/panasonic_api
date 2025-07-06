@@ -60,6 +60,29 @@ class IncomeSerializer(serializers.ModelSerializer):
     def get_status_value(self, obj):
         return obj.get_status_display()
 
+    def update(self, instance, validated_data):
+        old_status = instance.status
+        new_status = validated_data.get('status', old_status)
+
+        instance = super().update(instance, validated_data)
+
+        if old_status != 'finish' and new_status == 'finish':
+            self.create_or_update_product(instance)
+
+        return instance
+
+    def create_or_update_product(self, income):
+        product = income.product
+        quantity = income.quantity
+
+        warehouse_product, created = WarehouseProduct.objects.get_or_create(
+            product=product,
+            defaults={'quantity': quantity}
+        )
+        if not created:
+            warehouse_product.quantity += quantity
+            warehouse_product.save()
+
 
 class IncomeItemSerializer(serializers.ModelSerializer):
     class Meta:

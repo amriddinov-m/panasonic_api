@@ -35,9 +35,9 @@ class UnitType(models.Model):
 
 class ProductCategory(models.Model):
     name = models.CharField(max_length=255, verbose_name='Название')
+    status = models.CharField(max_length=255, verbose_name='Статус', null=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    status = models.CharField(max_length=255, verbose_name='Статус', null=True)
     user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='Пользователь')
 
     def __str__(self):

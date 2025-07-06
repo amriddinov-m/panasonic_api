@@ -37,6 +37,6 @@ class UserView(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
-
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['role', 'status']
+    ordering = ['-id']
