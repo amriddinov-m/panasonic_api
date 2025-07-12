@@ -3,6 +3,7 @@ from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 
+from .filters import WarehouseProductFilter
 from .serializers import *
 
 
@@ -63,7 +64,7 @@ class WarehouseProductViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['product', 'product__category', 'warehouse', 'unit_type', 'status', 'created', 'user']
+    filterset_class = WarehouseProductFilter
 
 
 class IncomeViewSet(viewsets.ModelViewSet):
