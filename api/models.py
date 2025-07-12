@@ -50,6 +50,7 @@ class ProductCategory(models.Model):
 
 class Product(models.Model):
     category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE, verbose_name='Категория')
+    code = models.CharField(max_length=255, verbose_name='Код продукта', null=True)
     name = models.CharField(max_length=255, verbose_name='Название')
     unit_type = models.ForeignKey('UnitType', on_delete=models.CASCADE, verbose_name='Ед. Изм')
     price = models.DecimalField(decimal_places=2, max_digits=10, default=0, verbose_name='Цена')

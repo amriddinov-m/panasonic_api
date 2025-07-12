@@ -63,7 +63,7 @@ class WarehouseProductViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['product', 'warehouse', 'unit_type', 'status', 'created', 'user']
+    filterset_fields = ['product', 'product__category', 'warehouse', 'unit_type', 'status', 'created', 'user']
 
 
 class IncomeViewSet(viewsets.ModelViewSet):
