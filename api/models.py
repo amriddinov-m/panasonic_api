@@ -172,7 +172,7 @@ class Outcome(models.Model):
 
 
 class OutcomeItem(models.Model):
-    outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE, verbose_name='Расход')
+    outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE, verbose_name='Расход', related_name='items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт')
     count = models.IntegerField(verbose_name='Кол-во')
     unit_type = models.ForeignKey('UnitType', on_delete=models.CASCADE, verbose_name='Ед. изм')

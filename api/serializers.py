@@ -123,6 +123,31 @@ class OutcomeSerializer(serializers.ModelSerializer):
     def get_status_value(self, obj):
         return obj.get_status_display()
 
+    def update(self, instance, validated_data):
+        prev_status = instance.status
+        new_status = validated_data.get('status', instance.status)
+
+        instance = super().update(instance, validated_data)
+
+        # логика вычитания товара при смене статуса на finished
+        if prev_status != 'finished' and new_status == 'finished':
+            for item in instance.items.all():
+                try:
+                    wp = WarehouseProduct.objects.get(product=item.product)
+                    if wp.count >= item.count:
+                        wp.count -= item.count
+                        wp.save()
+                    else:
+                        raise serializers.ValidationError(
+                            f"Недостаточно товара {item.product.name} на складе"
+                        )
+                except WarehouseProduct.DoesNotExist:
+                    raise serializers.ValidationError(
+                        f"Товар {item.product.name} не найден на складе"
+                    )
+
+        return instance
+
 
 class OutcomeItemSerializer(serializers.ModelSerializer):
     product_name = serializers.SerializerMethodField()
