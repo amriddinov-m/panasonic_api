@@ -4,6 +4,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 
 from .filters import WarehouseProductFilter
+from .models import Movement, MovementItem
 from .serializers import *
 
 
@@ -101,3 +102,23 @@ class OutcomeItemViewSet(viewsets.ModelViewSet):
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['outcome', 'product', 'unit_type', 'status', 'user']
+
+
+
+class MovementViewSet(viewsets.ModelViewSet):
+    queryset = Movement.objects.order_by('-id')
+    serializer_class = MovementSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = CustomPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['warehouse_from', 'warehouse_to', 'user', 'created', 'status']
+
+
+class MovementItemViewSet(viewsets.ModelViewSet):
+    queryset = MovementItem.objects.order_by('-id')
+    serializer_class = MovementItemSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = CustomPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['movement', 'product', 'user']
+

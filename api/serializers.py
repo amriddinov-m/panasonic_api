@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import (
     Status, UnitType, ProductCategory, Product,
     Warehouse, WarehouseProduct,
-    Income, IncomeItem, Outcome, OutcomeItem
+    Income, IncomeItem, Outcome, OutcomeItem, Movement, MovementItem
 )
 
 
@@ -154,6 +154,28 @@ class OutcomeItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OutcomeItem
+        fields = '__all__'
+
+    def get_product_name(self, obj):
+        return obj.product.name
+
+
+class MovementSerializer(serializers.ModelSerializer):
+    user_fullname = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Movement
+        fields = '__all__'
+
+    def get_user_fullname(self, obj):
+        return obj.user.get_full_name()
+
+
+class MovementItemSerializer(serializers.ModelSerializer):
+    product_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = MovementItem
         fields = '__all__'
 
     def get_product_name(self, obj):

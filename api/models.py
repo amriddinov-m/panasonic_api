@@ -72,6 +72,8 @@ class Warehouse(models.Model):
     name = models.CharField(max_length=255, verbose_name='<UNK>')
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    responsible = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='Ответственный',
+                                    related_name='responsible_warehouses', null=True)
     user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='Пользователь')
 
     def __str__(self):
@@ -118,6 +120,7 @@ class Income(models.Model):
     status = models.CharField(max_length=255, verbose_name='Статус',
                               choices=Status.choices, default=Status.pending, null=True)
     total_amount = models.IntegerField(verbose_name='Общая сумма', default=0)
+    warehouse = models.ForeignKey('Warehouse', on_delete=models.CASCADE, verbose_name='Склад', null=True)
 
     def __str__(self):
         return f'{self.id}'
@@ -162,6 +165,8 @@ class Outcome(models.Model):
                              related_name='outcome_user')
     comment = models.TextField(verbose_name='Коммент')
     total_amount = models.IntegerField(verbose_name='Общая сумма', default=0)
+    warehouse = models.ForeignKey('Warehouse', on_delete=models.CASCADE, verbose_name='Склад', null=True)
+    reason = models.TextField(verbose_name='Причина', null=True)
 
     def __str__(self):
         return f'{self.id}'
@@ -186,3 +191,45 @@ class OutcomeItem(models.Model):
     class Meta:
         verbose_name = 'Элемент расходы'
         verbose_name_plural = 'Элементы расхода'
+
+
+
+class Movement(models.Model):
+    class Status(models.TextChoices):
+        pending = 'pending', 'В ожидании'
+        collected = 'collected', 'Собрано'
+        sent = 'sent', 'Отправлено'
+        received = 'received', 'Получено'
+        finished = 'finished', 'Закончено'
+    warehouse_from = models.ForeignKey('Warehouse', on_delete=models.CASCADE, verbose_name='С какого склада',
+                                       related_name='warehouse_from')
+    warehouse_to = models.ForeignKey('Warehouse', on_delete=models.CASCADE, verbose_name='На какой склад',
+                                       related_name='warehouse_to')
+    user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='Пользователь')
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    status = models.CharField(max_length=255, verbose_name='Статус', choices=Status.choices, default=Status.pending)
+    comment = models.TextField(verbose_name='Коммент')
+
+    def __str__(self):
+        return f'{self.id}'
+
+    class Meta:
+        verbose_name = 'Пермещение'
+        verbose_name_plural = 'Перемещения'
+
+
+class MovementItem(models.Model):
+    movement = models.ForeignKey(Movement, on_delete=models.CASCADE, verbose_name='Перемещение', related_name='items')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт')
+    count = models.IntegerField(verbose_name='Кол-во', default=0)
+    comment = models.TextField(verbose_name='Коммент')
+    user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='Пользователь')
+
+    def __str__(self):
+        return f'{self.id}'
+
+    class Meta:
+        verbose_name = 'Элемент перемещения'
+        verbose_name_plural = 'Элементы перемещения'
+
