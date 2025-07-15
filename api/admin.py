@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from api.models import Status, Income, Outcome, Product, UnitType, ProductCategory, IncomeItem, WarehouseProduct, \
-    Movement, MovementItem
+    Movement, MovementItem, Warehouse
 
 
 @admin.register(Status)
@@ -51,4 +51,9 @@ class MovementAdmin(admin.ModelAdmin):
 
 @admin.register(MovementItem)
 class MovementItemAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Warehouse)
+class WarehouseAdmin(admin.ModelAdmin):
     pass
