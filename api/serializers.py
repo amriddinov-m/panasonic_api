@@ -162,6 +162,8 @@ class OutcomeItemSerializer(serializers.ModelSerializer):
 
 class MovementSerializer(serializers.ModelSerializer):
     user_fullname = serializers.SerializerMethodField()
+    warehouse_from_name = serializers.SerializerMethodField()
+    warehouse_to_name = serializers.SerializerMethodField()
 
     class Meta:
         model = Movement
@@ -169,6 +171,12 @@ class MovementSerializer(serializers.ModelSerializer):
 
     def get_user_fullname(self, obj):
         return obj.user.get_full_name()
+
+    def get_warehouse_from_name(self, obj):
+        return obj.warehouse_from.name
+
+    def get_warehouse_to_name(self, obj):
+        return obj.warehouse_to.name
 
 
 class MovementItemSerializer(serializers.ModelSerializer):
