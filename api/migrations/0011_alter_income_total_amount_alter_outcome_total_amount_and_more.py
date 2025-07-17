@@ -16,12 +16,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='income',
             name='total_amount',
-            field=models.DecimalField(decimal_places=2, default=0, max_digits=10, verbose_name='Общая сумма'),
+            field=models.DecimalField(decimal_places=2, default=0, max_digits=15, verbose_name='Общая сумма'),
         ),
         migrations.AlterField(
             model_name='outcome',
             name='total_amount',
-            field=models.DecimalField(decimal_places=2, default=0, max_digits=10, verbose_name='Общая сумма'),
+            field=models.DecimalField(decimal_places=2, default=0, max_digits=15, verbose_name='Общая сумма'),
         ),
         migrations.CreateModel(
             name='Order',
@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('updated', models.DateTimeField(auto_now=True)),
                 ('comment', models.TextField(null=True, verbose_name='Комментарии')),
-                ('total_amount', models.DecimalField(decimal_places=2, default=0, max_digits=10, verbose_name='Общая сумма')),
+                ('total_amount', models.DecimalField(decimal_places=2, default=0, max_digits=15, verbose_name='Общая сумма')),
                 ('status', models.CharField(choices=[('pending', 'В ожидании'), ('collected', 'Собрано'), ('delivering', 'Доставляется'), ('delivered', 'Доставлено'), ('cancelled', 'Отменено')], default='pending', max_length=255, verbose_name='Статус')),
                 ('client', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='order_client', to=settings.AUTH_USER_MODEL, verbose_name='Клиент')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='Пользователь')),
@@ -46,7 +46,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('count', models.IntegerField(default=0, verbose_name='Кол-во')),
                 ('comment', models.TextField(null=True, verbose_name='Коммент')),
-                ('price', models.DecimalField(decimal_places=2, default=0, max_digits=10, verbose_name='Цена')),
+                ('price', models.DecimalField(decimal_places=2, default=0, max_digits=15, verbose_name='Цена')),
                 ('status', models.CharField(choices=[('pending', 'В ожидании'), ('ready', 'Готово'), ('cancelled', 'Отменено')], default='pending', max_length=255, verbose_name='Статус')),
                 ('order', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='items', to='api.order', verbose_name='Заказ')),
                 ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.product', verbose_name='Продукт')),
