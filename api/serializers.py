@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import (
     Status, UnitType, ProductCategory, Product,
     Warehouse, WarehouseProduct,
-    Income, IncomeItem, Outcome, OutcomeItem, Movement, MovementItem
+    Income, IncomeItem, Outcome, OutcomeItem, Movement, MovementItem, Order, OrderItem
 )
 
 
@@ -188,3 +188,33 @@ class MovementItemSerializer(serializers.ModelSerializer):
 
     def get_product_name(self, obj):
         return obj.product.name
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    client_name = serializers.SerializerMethodField()
+    user_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Order
+        fields = '__all__'
+
+    def get_client_name(self, obj):
+        return obj.client.get_full_name()
+
+    def get_user_name(self, obj):
+        return obj.user.get_full_name()
+
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    product_name = serializers.SerializerMethodField()
+    unit_type_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = OrderItem
+        fields = '__all__'
+
+    def get_product_name(self, obj):
+        return obj.product.name
+
+    def get_unit_type_name(self, obj):
+        return obj.unit_type.name

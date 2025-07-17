@@ -1,7 +1,7 @@
 from rest_framework import routers
 from api.views import StatusViewSet, UnitTypeViewSet, ProductCategoryViewSet, ProductViewSet, WarehouseViewSet, \
     WarehouseProductViewSet, IncomeViewSet, IncomeItemViewSet, OutcomeViewSet, OutcomeItemViewSet, MovementViewSet, \
-    MovementItemViewSet
+    MovementItemViewSet, OrderViewSet, OrderItemViewSet
 
 router = routers.SimpleRouter()
 router.register(r'statuses', StatusViewSet)
@@ -16,3 +16,5 @@ router.register(r'outcomes', OutcomeViewSet)
 router.register(r'outcome-items', OutcomeItemViewSet)
 router.register(r'movements', MovementViewSet)
 router.register(r'movement-items', MovementItemViewSet)
+router.register(r'orders', OrderViewSet)
+router.register(r'order-items', OrderItemViewSet)

@@ -119,7 +119,7 @@ class Income(models.Model):
     comment = models.TextField(verbose_name='Коммент')
     status = models.CharField(max_length=255, verbose_name='Статус',
                               choices=Status.choices, default=Status.pending, null=True)
-    total_amount = models.IntegerField(verbose_name='Общая сумма', default=0)
+    total_amount = models.DecimalField(decimal_places=2, max_digits=10, default=0, verbose_name='Общая сумма')
     warehouse = models.ForeignKey('Warehouse', on_delete=models.CASCADE, verbose_name='Склад', null=True)
 
     def __str__(self):
@@ -164,7 +164,7 @@ class Outcome(models.Model):
     user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='Пользователь',
                              related_name='outcome_user')
     comment = models.TextField(verbose_name='Коммент')
-    total_amount = models.IntegerField(verbose_name='Общая сумма', default=0)
+    total_amount = models.DecimalField(decimal_places=2, max_digits=10, default=0, verbose_name='Общая сумма')
     warehouse = models.ForeignKey('Warehouse', on_delete=models.CASCADE, verbose_name='Склад', null=True)
     reason = models.TextField(verbose_name='Причина', null=True)
 
@@ -193,7 +193,6 @@ class OutcomeItem(models.Model):
         verbose_name_plural = 'Элементы расхода'
 
 
-
 class Movement(models.Model):
     class Status(models.TextChoices):
         pending = 'pending', 'В ожидании'
@@ -201,10 +200,11 @@ class Movement(models.Model):
         sent = 'sent', 'Отправлено'
         received = 'received', 'Получено'
         finished = 'finished', 'Закончено'
+
     warehouse_from = models.ForeignKey('Warehouse', on_delete=models.CASCADE, verbose_name='С какого склада',
                                        related_name='warehouse_from')
     warehouse_to = models.ForeignKey('Warehouse', on_delete=models.CASCADE, verbose_name='На какой склад',
-                                       related_name='warehouse_to')
+                                     related_name='warehouse_to')
     user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='Пользователь')
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -233,3 +233,49 @@ class MovementItem(models.Model):
         verbose_name = 'Элемент перемещения'
         verbose_name_plural = 'Элементы перемещения'
 
+
+class Order(models.Model):
+    class Status(models.TextChoices):
+        pending = 'pending', 'В ожидании'
+        collected = 'collected', 'Собрано'
+        delivering = 'delivering', 'Доставляется'
+        delivered = 'delivered', 'Доставлено'
+        cancelled = 'cancelled', 'Отменено'
+
+    client = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='Клиент',
+                               related_name='order_client')
+    user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='Пользователь')
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    comment = models.TextField(verbose_name='Комментарии', null=True)
+    total_amount = models.DecimalField(decimal_places=2, max_digits=10, default=0, verbose_name='Общая сумма')
+    status = models.CharField(max_length=255, verbose_name='Статус', choices=Status.choices, default=Status.pending)
+
+    def __str__(self):
+        return f'{self.id}'
+
+    class Meta:
+        verbose_name = 'Заказ'
+        verbose_name_plural = 'Заказы'
+
+
+class OrderItem(models.Model):
+    class Status(models.TextChoices):
+        pending = 'pending', 'В ожидании'
+        ready = 'ready', 'Готово'
+        cancelled = 'cancelled', 'Отменено'
+
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name='Заказ', related_name='items')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт')
+    count = models.IntegerField(verbose_name='Кол-во', default=0)
+    unit_type = models.ForeignKey('UnitType', on_delete=models.CASCADE, verbose_name='Ед. изм')
+    comment = models.TextField(verbose_name='Коммент', null=True)
+    price = models.DecimalField(decimal_places=2, max_digits=10, default=0, verbose_name='Цена')
+    status = models.CharField(max_length=255, verbose_name='Статус', choices=Status.choices, default=Status.pending)
+
+    def __str__(self):
+        return f'{self.id}'
+
+    class Meta:
+        verbose_name = 'Элемент заказа'
+        verbose_name_plural = 'Элементы заказа'
