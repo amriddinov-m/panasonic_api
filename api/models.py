@@ -119,7 +119,7 @@ class Income(models.Model):
     comment = models.TextField(verbose_name='Коммент')
     status = models.CharField(max_length=255, verbose_name='Статус',
                               choices=Status.choices, default=Status.pending, null=True)
-    total_amount = models.DecimalField(decimal_places=2, max_digits=10, default=0, verbose_name='Общая сумма')
+    total_amount = models.IntegerField(default=0, verbose_name='Общая сумма')
     warehouse = models.ForeignKey('Warehouse', on_delete=models.CASCADE, verbose_name='Склад', null=True)
 
     def __str__(self):
@@ -164,7 +164,7 @@ class Outcome(models.Model):
     user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='Пользователь',
                              related_name='outcome_user')
     comment = models.TextField(verbose_name='Коммент')
-    total_amount = models.DecimalField(decimal_places=2, max_digits=10, default=0, verbose_name='Общая сумма')
+    total_amount = models.IntegerField(default=0, verbose_name='Общая сумма')
     warehouse = models.ForeignKey('Warehouse', on_delete=models.CASCADE, verbose_name='Склад', null=True)
     reason = models.TextField(verbose_name='Причина', null=True)
 
