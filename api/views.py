@@ -4,7 +4,6 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 
 from .filters import WarehouseProductFilter
-from .models import Movement, MovementItem, OrderItem
 from .serializers import *
 
 
@@ -83,7 +82,7 @@ class IncomeItemViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['income', 'product', 'unit_type', 'status', 'user']
+    filterset_fields = ['income', 'product', 'status', 'user']
 
 
 class OutcomeViewSet(viewsets.ModelViewSet):
@@ -101,7 +100,7 @@ class OutcomeItemViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['outcome', 'product', 'unit_type', 'status', 'user']
+    filterset_fields = ['outcome', 'product', 'status', 'user']
 
 
 
@@ -138,4 +137,4 @@ class OrderItemViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['order', 'product', 'unit_type', 'status']
+    filterset_fields = ['order', 'product', 'status']

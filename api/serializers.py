@@ -48,7 +48,7 @@ class WarehouseProductSerializer(serializers.ModelSerializer):
         return obj.product.name
 
     def get_unit_type_name(self, obj):
-        return obj.unit_type.name
+        return obj.product.get_unit_type_display()
 
 
 class IncomeSerializer(serializers.ModelSerializer):
@@ -86,7 +86,6 @@ class IncomeSerializer(serializers.ModelSerializer):
             warehouse_product, created = WarehouseProduct.objects.get_or_create(
                 product=income_item.product,
                 defaults={'count': income_item.count,
-                          'unit_type': income_item.unit_type,
                           'price': income_item.price, }
             )
             if not created:
@@ -193,6 +192,7 @@ class MovementItemSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     client_name = serializers.SerializerMethodField()
     user_name = serializers.SerializerMethodField()
+    items_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
@@ -200,6 +200,9 @@ class OrderSerializer(serializers.ModelSerializer):
 
     def get_client_name(self, obj):
         return obj.client.get_full_name()
+
+    def get_items_count(self, obj):
+        return obj.items.count()
 
     def get_user_name(self, obj):
         return obj.user.get_full_name()
@@ -217,4 +220,4 @@ class OrderItemSerializer(serializers.ModelSerializer):
         return obj.product.name
 
     def get_unit_type_name(self, obj):
-        return obj.unit_type.name
+        return obj.product.get_unit_type_display()

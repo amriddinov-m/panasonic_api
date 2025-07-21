@@ -13,6 +13,11 @@ class StatusAdmin(admin.ModelAdmin):
 class WarehouseProductAdmin(admin.ModelAdmin):
     pass
 
+class ProductInline(admin.TabularInline):
+    model = Product
+    fields = ('name',)
+    extra = 0
+
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
@@ -21,7 +26,7 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(ProductCategory)
 class ProductCategoryAdmin(admin.ModelAdmin):
-    pass
+    inlines = [ProductInline]
 
 
 @admin.register(UnitType)

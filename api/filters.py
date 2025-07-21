@@ -10,4 +10,4 @@ class WarehouseProductFilter(django_filters.FilterSet):
 
     class Meta:
         model = WarehouseProduct
-        fields = ['product', 'product_name', 'warehouse', 'unit_type', 'status', 'created', 'user', 'product__category']
+        fields = ['product', 'product_name', 'warehouse', 'status', 'created', 'user', 'product__category']
