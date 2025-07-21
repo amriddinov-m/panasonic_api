@@ -13,8 +13,9 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import SimpleUploadedFile
 
+from api.models import Report
 from bot.MESSAGES import MESSAGES
-from bot.handlers.helpers import create_outcome
+from bot.handlers.helpers import create_report_item
 # from bot.handlers.helpers import add_days_to_today, file_processing, create_excel_task_file
 # from bot.handlers.lot import TIME_ZONE
 from bot.keyboards.main import main_menu_btn, inline_btns, task_btns
@@ -24,6 +25,9 @@ from bot.loader import dp, bot, form_router
 
 from bot.state.document import UploadState
 from panasonic_api import settings
+from user.models import User
+
+
 # from ee_task.settings import ITEMS_PER_PAGE
 
 
@@ -33,6 +37,8 @@ async def create_task_step(message: types.Message, state: FSMContext):
     file = FSInputFile(file_path)
     await message.answer_document(file, caption=MESSAGES['send_sales_report'])
     await state.set_state(UploadState.send_document)
+    user = User.objects.get(tg_id=message.from_user.id)
+    await state.update_data(user_id=user.id)
 
 
 @form_router.message(F.document)
@@ -104,9 +110,9 @@ async def handle_excel_file(message: types.Message, state: FSMContext):
 async def confirm_upload(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     items = data.get("items", [])
-
+    report = Report.objects.create(client_id=data.get('user_id'))
     for item in items:
-        await create_outcome(item["item_code"], item["item_name"], item["count"])
+        await create_report_item(report, item["item_code"], item["item_name"], item["count"])
 
     await state.clear()
     await callback.message.edit_reply_markup()

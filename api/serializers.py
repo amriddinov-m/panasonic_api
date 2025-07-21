@@ -85,6 +85,7 @@ class IncomeSerializer(serializers.ModelSerializer):
         for income_item in income_items:
             warehouse_product, created = WarehouseProduct.objects.get_or_create(
                 product=income_item.product,
+                warehouse=income.warehouse,
                 defaults={'count': income_item.count,
                           'price': income_item.price, }
             )
@@ -130,9 +131,13 @@ class OutcomeSerializer(serializers.ModelSerializer):
 
         # логика вычитания товара при смене статуса на finished
         if prev_status != 'finished' and new_status == 'finished':
+            warehouse = instance.warehouse
             for item in instance.items.all():
                 try:
-                    wp = WarehouseProduct.objects.get(product=item.product)
+                    wp = WarehouseProduct.objects.get(
+                        product=item.product,
+                        warehouse=warehouse
+                    )
                     if wp.count >= item.count:
                         wp.count -= item.count
                         wp.save()

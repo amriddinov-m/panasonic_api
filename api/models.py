@@ -279,3 +279,36 @@ class OrderItem(models.Model):
     class Meta:
         verbose_name = 'Элемент заказа'
         verbose_name_plural = 'Элементы заказа'
+
+
+class Report(models.Model):
+    class Status(models.TextChoices):
+        pending = 'pending', 'В ожидании'
+        confirmed = 'confirmed', 'Подтверждено'
+        cancelled = 'cancelled', 'Отменено'
+    client = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='Клиент')
+    created = models.DateTimeField(auto_now_add=True)
+    comment = models.TextField(verbose_name='Коммент', null=True)
+    status = models.CharField(max_length=255, verbose_name='Статус', choices=Status.choices, default=Status.pending)
+    period = models.IntegerField(verbose_name='Период(месяц)', default=0)
+
+    def __str__(self):
+        return f'{self.id}'
+
+    class Meta:
+        verbose_name = 'Отчёт'
+        verbose_name_plural = 'Отчёты'
+
+
+class ReportItem(models.Model):
+    report = models.ForeignKey(Report, on_delete=models.CASCADE, verbose_name='Отчёт', related_name='items')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт')
+    count = models.IntegerField(verbose_name='Кол-во', default=0)
+
+    def __str__(self):
+        return f'{self.id}'
+
+    class Meta:
+        verbose_name = 'Элемент отчета'
+        verbose_name_plural = 'Элементы отчета'
+

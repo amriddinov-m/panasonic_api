@@ -8,6 +8,8 @@ from openpyxl.styles import Font
 from openpyxl.utils import get_column_letter
 from openpyxl.workbook import Workbook
 
+from api.models import Product, ReportItem
+
 # from bot.admin import url_file_download
 # from bot.handlers.lot import TIME_ZONE
 # from bot.models import Task, EEUser
@@ -66,8 +68,9 @@ def set_column_width_based_on_content(ws):
         ws.column_dimensions[column_letter].width = adjusted_width
 
 
-async def create_outcome(item_code: str, item_name: str, count: int):
-    print(f"Создан расход: {item_code=} {item_name=} {count=}")
+async def create_report_item(report, item_code: str, item_name: str, count: int):
+    product = Product.objects.get(code=item_code)
+    ReportItem.objects.create(report=report, product=product, count=count)
 
 # def create_excel_task_file(chat_id):
 #     file_path = f'C:\\Projects\\ee_task\\bot\\handlers\\reports\\xlsx\\data.xlsx'
