@@ -201,6 +201,8 @@ class Movement(models.Model):
         sent = 'sent', 'Отправлено'
         received = 'received', 'Получено'
         finished = 'finished', 'Закончено'
+        cancelled = 'cancelled', 'Отменено'
+        confirmed_cancel = 'confirmed_cancel', 'Отмена подтверждена'
 
     warehouse_from = models.ForeignKey('Warehouse', on_delete=models.CASCADE, verbose_name='С какого склада',
                                        related_name='warehouse_from')
@@ -241,6 +243,7 @@ class Order(models.Model):
         collected = 'collected', 'Собрано'
         delivering = 'delivering', 'Доставляется'
         delivered = 'delivered', 'Доставлено'
+        sent = 'sent', 'Отправлено'
         cancelled = 'cancelled', 'Отменено'
 
     client = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='Клиент',
