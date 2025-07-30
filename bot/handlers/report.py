@@ -1,4 +1,5 @@
 import datetime
+import io
 import mimetypes
 import re
 import pandas as pd
@@ -12,8 +13,11 @@ from aiogram.types import FSInputFile, Document, InlineKeyboardMarkup, InlineKey
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import SimpleUploadedFile
+from openpyxl import Workbook
+from openpyxl.styles import Side, Border, Alignment, Font
+from openpyxl.utils import get_column_letter
 
-from api.models import Report
+from api.models import Report, WarehouseProduct
 from bot.MESSAGES import MESSAGES
 from bot.handlers.helpers import create_report_item
 # from bot.handlers.helpers import add_days_to_today, file_processing, create_excel_task_file
@@ -31,7 +35,7 @@ from user.models import User
 # from ee_task.settings import ITEMS_PER_PAGE
 
 
-@form_router.message(F.text == '📃 Загрузить отчет о продаже')
+@form_router.message(F.text == '📃 Шаблон отчёта')
 async def create_task_step(message: types.Message, state: FSMContext):
     file_path = os.path.join(os.path.dirname(__file__), "reports/xlsx", "panasonic_default_sales_data.xlsx")
     file = FSInputFile(file_path)
@@ -124,6 +128,76 @@ async def cancel_upload(callback: types.CallbackQuery, state: FSMContext):
     await state.clear()
     await callback.message.edit_reply_markup()
     await callback.message.answer("❌ Загрузка отменена. Пожалуйста, отправьте новый Excel-файл.")
+
+
+
+
+@form_router.message(F.text == "📤 Выгрузить склад")
+async def export_warehouse_products(message: types.Message):
+    queryset = WarehouseProduct.objects.select_related("product").all()
+
+    data = []
+    for wp in queryset:
+        data.append({
+            "Код модели": wp.product.code,
+            "Модели": wp.product.name,
+            "Количество": wp.count
+        })
+
+    # Создаем Excel-файл в памяти
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Warehouse"
+
+    # Заголовки
+    headers = list(data[0].keys()) if data else ["Код модели", "Модели", "Количество"]
+    ws.append(headers)
+
+    # Стили для заголовков
+    header_font = Font(bold=True)
+    center_align = Alignment(horizontal="center", vertical="center")
+    border = Border(
+        left=Side(style="thin"), right=Side(style="thin"),
+        top=Side(style="thin"), bottom=Side(style="thin")
+    )
+
+    for col_num, header in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_num, value=header)
+        cell.font = header_font
+        cell.alignment = center_align
+        cell.border = border
+
+    # Данные
+    for row_idx, row in enumerate(data, start=2):
+        for col_idx, key in enumerate(headers, start=1):
+            cell = ws.cell(row=row_idx, column=col_idx, value=row[key])
+            cell.alignment = center_align
+            cell.border = border
+
+    # Автоширина колонок
+    for col in ws.columns:
+        max_length = max(len(str(cell.value)) if cell.value else 0 for cell in col)
+        col_letter = get_column_letter(col[0].column)
+        ws.column_dimensions[col_letter].width = max_length + 2
+
+    # Сохраняем файл в память
+    buffer = io.BytesIO()
+    wb.save(buffer)
+    buffer.seek(0)
+
+    # Отправляем файл
+    excel_file = types.BufferedInputFile(buffer.read(), filename="warehouse_export.xlsx")
+    await message.answer_document(excel_file, caption="📦 Текущий список товаров на складе")
+
+
+
+@form_router.message(F.text == '🗂 Прайс каталог')
+async def create_task_step(message: types.Message):
+    file_path = os.path.join(os.path.dirname(__file__), "reports/xlsx", "price_catalog.xlsx")
+    file = FSInputFile(file_path)
+    await message.answer_document(file, caption=MESSAGES['send_price_catalog'])
+
+
 # @form_router.message(F.text == '📌 Создать поручение')
 # async def create_task_step(message: types.Message, state: FSMContext):
 #     if message.from_user.id in [settings.PROCUREMENT_TG_ID, settings.CONTRACT_TG_ID, settings.DIRECTOR_TG_ID]:

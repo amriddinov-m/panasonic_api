@@ -17,7 +17,11 @@ def main_menu_btn():
 def start_btns():
     kb = [
         [
-            KeyboardButton(text='📃 Загрузить отчет о продаже'),
+            KeyboardButton(text='📃 Шаблон отчёта'),
+            KeyboardButton(text='📤 Выгрузить склад'),
+        ],
+        [
+            KeyboardButton(text='🗂 Прайс каталог'),
         ]
 
     ]
