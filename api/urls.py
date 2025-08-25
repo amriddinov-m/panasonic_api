@@ -1,7 +1,9 @@
+from django.urls import path
 from rest_framework import routers
 from api.views import StatusViewSet, UnitTypeViewSet, ProductCategoryViewSet, ProductViewSet, WarehouseViewSet, \
     WarehouseProductViewSet, IncomeViewSet, IncomeItemViewSet, OutcomeViewSet, OutcomeItemViewSet, MovementViewSet, \
-    MovementItemViewSet, OrderViewSet, OrderItemViewSet
+    MovementItemViewSet, OrderViewSet, OrderItemViewSet, SalesVolumeView, SalesVolumeCompareView, TopProductsView, \
+    LeastPopularProductsView
 
 router = routers.SimpleRouter()
 router.register(r'statuses', StatusViewSet)
@@ -18,3 +20,12 @@ router.register(r'movements', MovementViewSet)
 router.register(r'movement-items', MovementItemViewSet)
 router.register(r'orders', OrderViewSet)
 router.register(r'order-items', OrderItemViewSet)
+
+urlpatterns = [
+    path("reports/sales-volume/", SalesVolumeView.as_view(), name="report-sales-volume"),
+    path("reports/sales-volume/compare/", SalesVolumeCompareView.as_view(),
+         name="report-sales-volume-compare"),
+    path("reports/top-products/", TopProductsView.as_view(), name="report-top-products"),
+    path("reports/least-popular-products/", LeastPopularProductsView.as_view(),
+         name="report-least-popular-products"),
+]
