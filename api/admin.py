@@ -81,7 +81,8 @@ class ReportItemAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    pass
+    list_display = 'id', 'client', 'user', 'total_amount', 'status'
+    list_filter = 'client',
 
 
 @admin.register(OrderItem)
