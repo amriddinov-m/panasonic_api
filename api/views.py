@@ -2,17 +2,19 @@ from datetime import timedelta, date
 from decimal import Decimal
 from math import ceil
 
+import openpyxl
 from dateutil.relativedelta import relativedelta
 from django.db.models import ExpressionWrapper, F, DecimalField, Sum, Count, Value, Min, Max, Q
 from django.db.models.functions import TruncDay, TruncWeek, TruncMonth, Coalesce
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from user.models import User
 from .filters import WarehouseProductFilter
 from .models import ReportItem, Report
 from .serializers import *
@@ -3005,3 +3007,124 @@ class MostOrderedProductsView(APIView):
             "count": len(results),
             "results": results,
         })
+
+
+class OrderImportView(APIView):
+    """
+    Импорт заказов из Excel-файла
+    """
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        excel_file = request.FILES.get("file")
+
+        if not excel_file:
+            return Response({"error": "Необходимо передать файл"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            wb = openpyxl.load_workbook(excel_file)
+            sheet = wb.active
+        except Exception as e:
+            return Response({"error": f"Ошибка при чтении файла: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+
+        created_count = 0
+        skipped = []
+
+        for row in sheet.iter_rows(min_row=2, values_only=True):
+            try:
+                phone_number = str(row[0]).strip()
+                comment = row[1]
+                total_amount = row[2]
+                status_value = row[3]
+
+                # ищем клиента по номеру телефона
+                client = User.objects.filter(phone_number=phone_number).first()
+                if not client:
+                    skipped.append(f"Клиент с телефоном {phone_number} не найден")
+                    continue
+
+                Order.objects.create(
+                    client=client,
+                    user=request.user,  # авторизованный пользователь
+                    comment=comment,
+                    total_amount=total_amount or 0,
+                    status=status_value or Order.Status.pending,
+                )
+
+                created_count += 1
+
+            except Exception as e:
+                skipped.append(str(e))
+                continue
+
+        return Response({
+            "created": created_count,
+            "skipped": len(skipped),
+            "errors": skipped
+        }, status=status.HTTP_201_CREATED)
+
+
+class OutcomeImportView(APIView):
+    """
+    Импорт исходов (Outcome) из Excel.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        excel_file = request.FILES.get("file")
+
+        if not excel_file:
+            return Response({"error": "Необходимо передать Excel-файл"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            wb = openpyxl.load_workbook(excel_file)
+            sheet = wb.active
+        except Exception as e:
+            return Response({"error": f"Ошибка при чтении файла: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+
+        created_count = 0
+        skipped = []
+
+        for row in sheet.iter_rows(min_row=2, values_only=True):
+            try:
+                phone = str(row[0]).strip()
+                comment = row[1]
+                total_amount = row[2]
+                status_value = (row[3] or Outcome.Status.pending).strip() if row[3] else Outcome.Status.pending
+                warehouse_name = str(row[4]).strip() if row[4] else None
+                reason = row[5]
+
+                # 1️⃣ ищем клиента
+                client = User.objects.filter(phone_number=phone).first()
+                if not client:
+                    skipped.append(f"Клиент с телефоном {phone} не найден")
+                    continue
+
+                # 2️⃣ ищем склад
+                warehouse = None
+                if warehouse_name:
+                    warehouse = Warehouse.objects.filter(name__iexact=warehouse_name).first()
+                    if not warehouse:
+                        skipped.append(f"Склад '{warehouse_name}' не найден")
+                        continue
+
+                # 3️⃣ создаём Outcome
+                Outcome.objects.create(
+                    client=client,
+                    user=request.user,
+                    comment=comment or "",
+                    total_amount=total_amount or 0,
+                    status=status_value,
+                    warehouse=warehouse,
+                    reason=reason or "",
+                )
+                created_count += 1
+
+            except Exception as e:
+                skipped.append(str(e))
+                continue
+
+        return Response({
+            "created": created_count,
+            "skipped": len(skipped),
+            "errors": skipped
+        }, status=status.HTTP_201_CREATED)

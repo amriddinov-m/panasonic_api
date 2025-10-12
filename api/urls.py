@@ -6,7 +6,7 @@ from api.views import StatusViewSet, UnitTypeViewSet, ProductCategoryViewSet, Pr
     LeastPopularProductsView, DealersSalesView, DealersCompareView, DealerAvgCheckView, OrdersAndReturnsView, \
     SalesGeographyView, TopCategoriesView, AssortmentStructureView, CentralStockView, StocksByWarehouseDealerView, \
     ForecastShortagesView, PlanVsActualView, PlanAchievementView, OrdersCountView, AverageOrderAmountView, \
-    MostOrderedProductsView
+    MostOrderedProductsView, OrderImportView, OutcomeImportView
 
 router = routers.SimpleRouter()
 router.register(r'statuses', StatusViewSet)
@@ -54,4 +54,7 @@ urlpatterns = [
          name="report-average-order-amount"),
     path("reports/most-ordered-products/", MostOrderedProductsView.as_view(),
          name="report-most-ordered-products"),
+
+    path('orders/import/', OrderImportView.as_view(), name='order_import'),
+    path('outcomes/import/', OutcomeImportView.as_view(), name='outcome_import'),
 ]

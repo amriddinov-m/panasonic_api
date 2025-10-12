@@ -19,6 +19,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from user.urls import router as user_router
 from api.urls import router as api_router
@@ -29,14 +30,19 @@ router = DefaultRouter()
 router.extend(user_router)
 router.extend(api_router)
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/v1/', include(router.urls)),
-    path('api/v1/', include('api.urls')),
-    path('api/v1/', include('user.urls')),
-    path('api/auth/', include('rest_framework.urls')),
-    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
-    # Swagger UI
-    path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
-    # ReDoc
-    path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+                  path('admin/', admin.site.urls),
+                  path('api/v1/', include(router.urls)),
+                  path('api/v1/', include('api.urls')),
+                  path('api/v1/', include('user.urls')),
+                  path('api/auth/', include('rest_framework.urls')),
+                  path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+                  # Swagger UI
+                  path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
+                  # ReDoc
+                  path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
+                  # выдаёт access и refresh токены при логине
+                  path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+
+                  # обновляет access-токен по refresh-токену
+                  path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+              ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
