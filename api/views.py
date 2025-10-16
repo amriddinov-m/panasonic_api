@@ -3063,9 +3063,9 @@ class OrderImportView(APIView):
         }, status=status.HTTP_201_CREATED)
 
 
-class OutcomeImportView(APIView):
+class IncomeImportView(APIView):
     """
-    Импорт исходов (Outcome) из Excel.
+    Импорт приходов Income из Excel.
     """
     permission_classes = [IsAuthenticated]
 
@@ -3089,9 +3089,8 @@ class OutcomeImportView(APIView):
                 phone = str(row[0]).strip()
                 comment = row[1]
                 total_amount = row[2]
-                status_value = (row[3] or Outcome.Status.pending).strip() if row[3] else Outcome.Status.pending
+                status_value = (row[3] or Income.Status.pending).strip() if row[3] else Income.Status.pending
                 warehouse_name = str(row[4]).strip() if row[4] else None
-                reason = row[5]
 
                 # 1️⃣ ищем клиента
                 client = User.objects.filter(phone_number=phone).first()
@@ -3107,15 +3106,14 @@ class OutcomeImportView(APIView):
                         skipped.append(f"Склад '{warehouse_name}' не найден")
                         continue
 
-                # 3️⃣ создаём Outcome
-                Outcome.objects.create(
+                # 3️⃣ создаём Income
+                Income.objects.create(
                     client=client,
                     user=request.user,
                     comment=comment or "",
                     total_amount=total_amount or 0,
                     status=status_value,
                     warehouse=warehouse,
-                    reason=reason or "",
                 )
                 created_count += 1
 
