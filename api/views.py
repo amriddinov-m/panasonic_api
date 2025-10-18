@@ -59,7 +59,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['name', 'category', 'unit_type', 'status', 'created', 'user']
+    filterset_fields = ['name', 'category', 'code', 'unit_type', 'status', 'created', 'user']
 
 
 class WarehouseViewSet(viewsets.ModelViewSet):
@@ -68,7 +68,7 @@ class WarehouseViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['name', 'created', 'user']
+    filterset_fields = ['name', 'created', 'user', 'responsible']
 
 
 class WarehouseProductViewSet(viewsets.ModelViewSet):
@@ -86,7 +86,7 @@ class IncomeViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['client', 'created', 'user', 'status']
+    filterset_fields = ['client', 'created', 'user', 'status', 'warehouse']
 
 
 class IncomeItemViewSet(viewsets.ModelViewSet):
@@ -104,7 +104,7 @@ class OutcomeViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['client', 'created', 'user', 'status']
+    filterset_fields = ['client', 'created', 'user', 'status', 'warehouse', 'reason']
 
 
 class OutcomeItemViewSet(viewsets.ModelViewSet):
