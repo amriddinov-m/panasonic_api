@@ -9,6 +9,7 @@ from django.db.models.functions import TruncDay, TruncWeek, TruncMonth, Coalesce
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, status
+from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -106,6 +107,18 @@ class OutcomeViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['client', 'created', 'user', 'status', 'warehouse', 'reason']
 
+    @action(detail=False, methods=['get'], url_path='my')
+    def my_outcomes(self, request):
+        """Возвращает исходы (Outcome), где client = текущий пользователь"""
+        user = request.user
+        queryset = self.get_queryset().filter(client=user)
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
 
 class OutcomeItemViewSet(viewsets.ModelViewSet):
     queryset = OutcomeItem.objects.order_by('-id')
@@ -141,6 +154,18 @@ class OrderViewSet(viewsets.ModelViewSet):
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['client', 'user', 'status', 'created']
+
+    @action(detail=False, methods=['get'], url_path='my')
+    def my_orders(self, request):
+        user = request.user
+        queryset = self.get_queryset().filter(client=user)
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
 
 
 class OrderItemViewSet(viewsets.ModelViewSet):
