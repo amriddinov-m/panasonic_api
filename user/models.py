@@ -111,10 +111,16 @@ class BalanceHistory(models.Model):
         active = 'active', 'Активный'
         finished = 'finished', 'Закончено'
 
+    class HistoryType(models.TextChoices):
+        income = 'income', 'Пополнение'
+        outcome = 'outcome', 'Расход'
+        withdraw = 'withdraw', 'Вывод'
+
     balance = models.ForeignKey(UserBalance, on_delete=models.CASCADE, verbose_name='Баланс')
     amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Сумма', default=0)
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
-    history_type = models.CharField(max_length=255, verbose_name='Тип операции')
+    history_type = models.CharField(max_length=255, verbose_name='Тип операции', choices=HistoryType.choices,
+                                    default=HistoryType.income)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=255, verbose_name='Статус', choices=Status.choices, default=Status.active)
