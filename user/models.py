@@ -86,3 +86,43 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_full_name(self):
         return f'{self.first_name} {self.last_name}'
 
+
+class UserBalance(models.Model):
+    class Status(models.TextChoices):
+        active = 'active', 'Активный'
+        disabled = 'disabled', 'Заблокирован'
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
+    balance_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Баланс')
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    status = models.CharField(max_length=255, verbose_name='Статус', choices=Status.choices, default=Status.active)
+
+    def __str__(self):
+        return f'{self.user.get_full_name()} - {self.balance_amount}'
+
+    class Meta:
+        verbose_name = 'Баланс пользователя'
+        verbose_name_plural = 'Балансы пользователей'
+
+
+class BalanceHistory(models.Model):
+    class Status(models.TextChoices):
+        active = 'active', 'Активный'
+        finished = 'finished', 'Закончено'
+
+    balance = models.ForeignKey(UserBalance, on_delete=models.CASCADE, verbose_name='Баланс')
+    amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Сумма', default=0)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
+    history_type = models.CharField(max_length=255, verbose_name='Тип операции')
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    status = models.CharField(max_length=255, verbose_name='Статус', choices=Status.choices, default=Status.active)
+    comment = models.TextField(verbose_name='Коммент', null=True)
+
+    def __str__(self):
+        return f'{self.pk}'
+
+    class Meta:
+        verbose_name = 'Операции по счету'
+        verbose_name_plural = 'Операции по счетам'

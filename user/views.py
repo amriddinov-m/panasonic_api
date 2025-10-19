@@ -6,8 +6,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from user.models import User
+from api.views import CustomPagination
+from user.models import User, BalanceHistory, UserBalance
 from user.serializer import LoginSerializer, UserSerializer
+from user.serializers import UserBalanceSerializer, BalanceHistorySerializer
 
 
 class LoginView(APIView):
@@ -40,3 +42,21 @@ class UserView(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['role', 'status']
     ordering = ['-id']
+
+
+class UserBalanceViewSet(viewsets.ModelViewSet):
+    queryset = UserBalance.objects.order_by('-id')
+    serializer_class = UserBalanceSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = CustomPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['user', 'balance_amount', 'created', 'status']
+
+
+class BalanceHistoryViewSet(viewsets.ModelViewSet):
+    queryset = BalanceHistory.objects.order_by('-id')
+    serializer_class = BalanceHistorySerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = CustomPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['balance', 'user', 'history_type', 'created', 'status']
