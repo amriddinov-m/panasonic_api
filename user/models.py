@@ -56,6 +56,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         provider = 'provider', 'Провайдер'
         admin = 'admin', 'Админ'
         dealer = 'dealer', 'Дилер'
+        warehouse = 'warehouse', 'Складовщик'
 
 
     email = models.EmailField(unique=True, blank=True, null=True)

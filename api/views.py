@@ -111,6 +111,13 @@ class OutcomeViewSet(viewsets.ModelViewSet):
     def my_outcomes(self, request):
         """Возвращает исходы (Outcome), где client = текущий пользователь"""
         user = request.user
+        # Проверяем роль пользователя
+        if not hasattr(user, 'role') or user.role != 'dealer':
+            return Response(
+                {"detail": "Доступ запрещён: только пользователи с ролью 'shop'."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
         queryset = self.get_queryset().filter(client=user)
         page = self.paginate_queryset(queryset)
         if page is not None:
@@ -158,6 +165,13 @@ class OrderViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'], url_path='my')
     def my_orders(self, request):
         user = request.user
+        # Проверяем роль пользователя
+        if not hasattr(user, 'role') or user.role != 'provider':
+            return Response(
+                {"detail": "Доступ запрещён: только пользователи с ролью 'shop'."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
         queryset = self.get_queryset().filter(client=user)
         page = self.paginate_queryset(queryset)
         if page is not None:
