@@ -16,7 +16,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from user.models import User
-from .filters import WarehouseProductFilter
+from .filters import WarehouseProductFilter, OutcomeFilter, OrderFilter, IncomeFilter
 from .models import ReportItem, Report
 from .serializers import *
 
@@ -87,7 +87,7 @@ class IncomeViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['client', 'created', 'user', 'status', 'warehouse']
+    filterset_class = IncomeFilter
 
 
 class IncomeItemViewSet(viewsets.ModelViewSet):
@@ -105,7 +105,7 @@ class OutcomeViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['client', 'created', 'user', 'status', 'warehouse', 'reason']
+    filterset_class = OutcomeFilter
 
     @action(detail=False, methods=['get'], url_path='my')
     def my_outcomes(self, request):
@@ -160,7 +160,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['client', 'user', 'status', 'created']
+    filterset_class = OrderFilter
 
     @action(detail=False, methods=['get'], url_path='my')
     def my_orders(self, request):
