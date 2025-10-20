@@ -24,7 +24,7 @@ class IncomeFilter(django_filters.FilterSet):
 
     class Meta:
         model = Income
-        fields = ['client', 'created', 'user', 'status', 'warehouse', 'from_date', 'to_date']
+        fields = ['client', 'created', 'user', 'status', 'warehouse', 'reason', 'reason_id', 'from_date', 'to_date']
 
 
 class OutcomeFilter(django_filters.FilterSet):
@@ -37,7 +37,7 @@ class OutcomeFilter(django_filters.FilterSet):
 
     class Meta:
         model = Outcome
-        fields = ['client', 'user', 'status', 'warehouse', 'reason', 'from_date', 'to_date']
+        fields = ['client', 'user', 'status', 'warehouse', 'reason', 'reason_id', 'from_date', 'to_date']
 
 
 class OrderFilter(django_filters.FilterSet):
