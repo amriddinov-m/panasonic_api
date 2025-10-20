@@ -181,7 +181,6 @@ class OrderViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-
 class OrderItemViewSet(viewsets.ModelViewSet):
     queryset = OrderItem.objects.order_by('-id')
     serializer_class = OrderItemSerializer
@@ -2143,11 +2142,14 @@ class ForecastShortagesView(APIView):
         def key_days(x):  # меньше дней покрытия — выше риск
             v = x["days_of_cover"]
             return (v is None, v if v is not None else float("inf"))
+
         def key_rate(x):  # больше расход — выше риск
             v = x["daily_rate"]
             return (v is None, -(v if v is not None else 0.0))
+
         def key_stock(x):
             return -x["stock_qty"]
+
         def key_doc(x):  # документальная срочность — дата исчерпания ближе
             v = x["depletion_date"]
             return (v is None, v or "9999-12-31")
@@ -2257,13 +2259,13 @@ class PlanVsActualView(APIView):
 
         fact_grouped = (
             fact_qs.annotate(period=TruncMonth("outcome__created"))
-                   .values("period", *dim_values)
-                   .annotate(
-                       actual_qty=Coalesce(Sum("count"), 0),
-                       actual_amount=Coalesce(Sum(amount_expr), zero_dec),
-                       actual_orders=Count("outcome_id", distinct=True),
-                   )
-                   .order_by("period")
+            .values("period", *dim_values)
+            .annotate(
+                actual_qty=Coalesce(Sum("count"), 0),
+                actual_amount=Coalesce(Sum(amount_expr), zero_dec),
+                actual_orders=Count("outcome_id", distinct=True),
+            )
+            .order_by("period")
         )
 
         # -------- план из Report / ReportItem
@@ -2313,6 +2315,7 @@ class PlanVsActualView(APIView):
                     "plan_amount": r["plan_amount"],
                     "plan_orders": r["plan_orders"],
                 })
+
         # при dimension=warehouse плановых данных по складу нет — оставим план = None
 
         # -------- сшивка факта и плана
@@ -2440,9 +2443,9 @@ class PlanVsActualView(APIView):
 
         # сортировка + лимит
         key_map = {
-            "amount":  (lambda x: (x["actual_amount"] or Decimal("0"))),
-            "qty":     (lambda x: (x["actual_qty"] or 0)),
-            "orders":  (lambda x: (x["actual_orders"] or 0)),
+            "amount": (lambda x: (x["actual_amount"] or Decimal("0"))),
+            "qty": (lambda x: (x["actual_qty"] or 0)),
+            "orders": (lambda x: (x["actual_orders"] or 0)),
         }
         rows.sort(key=key_map.get(metric, key_map["amount"]), reverse=(direction != "asc"))
         rows = rows[:limit]
@@ -2504,7 +2507,7 @@ class PlanAchievementView(APIView):
         dimension = request.query_params.get("dimension", "none")  # none|dealer
         status = request.query_params.get("status", Outcome.Status.finished)
         client_ids = request.query_params.getlist("client")
-        metric = request.query_params.get("metric", "amount")      # amount|qty|orders
+        metric = request.query_params.get("metric", "amount")  # amount|qty|orders
         direction = request.query_params.get("direction", "desc")
         include_values = request.query_params.get("include_values", "true").lower() == "true"
         try:
@@ -2540,12 +2543,12 @@ class PlanAchievementView(APIView):
 
         fact_rows = (
             fact_qs.annotate(period=TruncMonth("outcome__created"))
-                   .values("period", *dim_fields)
-                   .annotate(
-                       actual_qty=Coalesce(Sum("count"), 0),
-                       actual_amount=Coalesce(Sum(amount_expr), zero_dec),
-                       actual_orders=Count("outcome_id", distinct=True),
-                   )
+            .values("period", *dim_fields)
+            .annotate(
+                actual_qty=Coalesce(Sum("count"), 0),
+                actual_amount=Coalesce(Sum(amount_expr), zero_dec),
+                actual_orders=Count("outcome_id", distinct=True),
+            )
         )
 
         # ---- ПЛАН (Report.confirmed)
@@ -2673,9 +2676,15 @@ class PlanAchievementView(APIView):
             rows.append(row)
 
         # ---- сортировка
-        def k_amount(x): return (x["achv_amount_pct"] is None, x["achv_amount_pct"] or -1.0)
-        def k_qty(x):    return (x["achv_qty_pct"] is None, x["achv_qty_pct"] or -1.0)
-        def k_orders(x): return (x["achv_orders_pct"] is None, x["achv_orders_pct"] or -1.0)
+        def k_amount(x):
+            return (x["achv_amount_pct"] is None, x["achv_amount_pct"] or -1.0)
+
+        def k_qty(x):
+            return (x["achv_qty_pct"] is None, x["achv_qty_pct"] or -1.0)
+
+        def k_orders(x):
+            return (x["achv_orders_pct"] is None, x["achv_orders_pct"] or -1.0)
+
         key_map = {"amount": k_amount, "qty": k_qty, "orders": k_orders}
         rows.sort(key=key_map.get(metric, k_amount), reverse=(direction != "asc"))
 
@@ -2736,17 +2745,17 @@ class OrdersCountView(APIView):
 
         bucketed = (
             qs.annotate(period=trunc("created"))
-              .values("period")
-              .annotate(
-                  total=Coalesce(Count("id"), 0),
-                  pending=Coalesce(Count("id", filter=Q(status=Order.Status.pending)), 0),
-                  collected=Coalesce(Count("id", filter=Q(status=Order.Status.collected)), 0),
-                  delivering=Coalesce(Count("id", filter=Q(status=Order.Status.delivering)), 0),
-                  delivered=Coalesce(Count("id", filter=Q(status=Order.Status.delivered)), 0),
-                  sent=Coalesce(Count("id", filter=Q(status=Order.Status.sent)), 0),
-                  cancelled=Coalesce(Count("id", filter=Q(status=Order.Status.cancelled)), 0),
-              )
-              .order_by("period")
+            .values("period")
+            .annotate(
+                total=Coalesce(Count("id"), 0),
+                pending=Coalesce(Count("id", filter=Q(status=Order.Status.pending)), 0),
+                collected=Coalesce(Count("id", filter=Q(status=Order.Status.collected)), 0),
+                delivering=Coalesce(Count("id", filter=Q(status=Order.Status.delivering)), 0),
+                delivered=Coalesce(Count("id", filter=Q(status=Order.Status.delivered)), 0),
+                sent=Coalesce(Count("id", filter=Q(status=Order.Status.sent)), 0),
+                cancelled=Coalesce(Count("id", filter=Q(status=Order.Status.cancelled)), 0),
+            )
+            .order_by("period")
         )
 
         results = []
@@ -2813,14 +2822,14 @@ class AverageOrderAmountView(APIView):
 
     def get(self, request):
         # ---- параметры
-        group_by = request.query_params.get("group_by", "month")       # none|day|week|month
-        dimension = request.query_params.get("dimension", "none")      # none|dealer|warehouse
+        group_by = request.query_params.get("group_by", "month")  # none|day|week|month
+        dimension = request.query_params.get("dimension", "none")  # none|dealer|warehouse
         date_from = request.query_params.get("date_from")
         date_to = request.query_params.get("date_to")
         status = request.query_params.get("status", Outcome.Status.finished)
         client_ids = request.query_params.getlist("client")
         warehouse_id = request.query_params.get("warehouse")
-        order_by = request.query_params.get("order_by", "avg")         # avg|amount|orders
+        order_by = request.query_params.get("order_by", "avg")  # avg|amount|orders
         direction = request.query_params.get("direction", "desc")
         try:
             limit = int(request.query_params.get("limit", 500))
@@ -2870,10 +2879,10 @@ class AverageOrderAmountView(APIView):
         # агрегация
         grouped = (
             qs.values(*values)
-              .annotate(
-                  total_amount=Coalesce(Sum(amount_expr), zero_dec),
-                  orders=Count("outcome_id", distinct=True),
-              )
+            .annotate(
+                total_amount=Coalesce(Sum(amount_expr), zero_dec),
+                orders=Count("outcome_id", distinct=True),
+            )
         )
 
         # подготовка строк
@@ -2913,9 +2922,15 @@ class AverageOrderAmountView(APIView):
             })
 
         # сортировка
-        def k_avg(x):    return (x["avg_order_amount"] is None, x["avg_order_amount"] or Decimal("0"))
-        def k_amount(x): return x["total_amount"] or Decimal("0")
-        def k_orders(x): return x["orders"] or 0
+        def k_avg(x):
+            return (x["avg_order_amount"] is None, x["avg_order_amount"] or Decimal("0"))
+
+        def k_amount(x):
+            return x["total_amount"] or Decimal("0")
+
+        def k_orders(x):
+            return x["orders"] or 0
+
         key_map = {"avg": k_avg, "amount": k_amount, "orders": k_orders}
         rows.sort(key=key_map.get(order_by, k_avg), reverse=(direction != "asc"))
 
@@ -2990,11 +3005,11 @@ class MostOrderedProductsView(APIView):
         grouped = (
             qs.values("product_id", "product__name", "product__unit_type",
                       "product__category_id", "product__category__name")
-              .annotate(
-                  total_qty=Coalesce(Sum("count"), 0),
-                  total_amount=Coalesce(Sum(amount_expr), zero_dec),
-                  orders=Count("order_id", distinct=True),
-              )
+            .annotate(
+                total_qty=Coalesce(Sum("count"), 0),
+                total_amount=Coalesce(Sum(amount_expr), zero_dec),
+                orders=Count("order_id", distinct=True),
+            )
         )
 
         # Общие заказы (для расчёта долей)
@@ -3053,6 +3068,7 @@ class OrderImportView(APIView):
     Импорт заказов из Excel-файла
     """
     permission_classes = [IsAuthenticated]
+
     def post(self, request):
         excel_file = request.FILES.get("file")
 
@@ -3165,3 +3181,21 @@ class IncomeImportView(APIView):
             "skipped": len(skipped),
             "errors": skipped
         }, status=status.HTTP_201_CREATED)
+
+
+class BannerViewSet(viewsets.ModelViewSet):
+    queryset = Banner.objects.order_by('-id')
+    serializer_class = BannerSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = CustomPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['status']
+
+
+class CatalogViewSet(viewsets.ModelViewSet):
+    queryset = Catalog.objects.order_by('-id')
+    serializer_class = CatalogSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = CustomPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['status']

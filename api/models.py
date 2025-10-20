@@ -302,6 +302,7 @@ class Report(models.Model):
         pending = 'pending', 'В ожидании'
         confirmed = 'confirmed', 'Подтверждено'
         cancelled = 'cancelled', 'Отменено'
+
     client = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='Клиент')
     created = models.DateTimeField(auto_now_add=True)
     comment = models.TextField(verbose_name='Коммент', null=True)
@@ -328,3 +329,39 @@ class ReportItem(models.Model):
         verbose_name = 'Элемент отчета'
         verbose_name_plural = 'Элементы отчета'
 
+
+class Banner(models.Model):
+    class Status(models.TextChoices):
+        active = 'active', 'Активный'
+        disabled = 'disabled', 'Отключен'
+
+    photo = models.ImageField(upload_to='banner', verbose_name='Фото')
+    content = models.TextField(verbose_name='Контент')
+    status = models.CharField(max_length=255, verbose_name='Статус', choices=Status.choices, default=Status.active)
+
+    def __str__(self):
+        return f'{self.pk}'
+
+    class Meta:
+        verbose_name = 'Баннер'
+        verbose_name_plural = 'Баннеры'
+
+
+class Catalog(models.Model):
+    class Status(models.TextChoices):
+        active = 'active', 'Активный'
+        disabled = 'disabled', 'Отключен'
+
+    name = models.CharField(max_length=255, verbose_name='Название')
+    price = models.DecimalField(decimal_places=2, max_digits=15, verbose_name='Цена')
+    discount_price = models.DecimalField(decimal_places=2, max_digits=15, verbose_name='Цена со скидкой')
+    photo = models.ImageField(upload_to='catalog', verbose_name='Фото')
+    status = models.CharField(max_length=255, verbose_name='Статус', choices=Status.choices, default=Status.active)
+    description = models.TextField(verbose_name='Описание', null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.pk}'
+
+    class Meta:
+        verbose_name = 'Каталог'
+        verbose_name_plural = 'Каталоги'

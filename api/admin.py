@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from api.models import Status, Income, Outcome, Product, UnitType, ProductCategory, IncomeItem, WarehouseProduct, \
-    Movement, MovementItem, Warehouse, Report, ReportItem, Order, OrderItem
+    Movement, MovementItem, Warehouse, Report, ReportItem, Order, OrderItem, Banner, Catalog
 
 
 @admin.register(Status)
@@ -12,6 +12,7 @@ class StatusAdmin(admin.ModelAdmin):
 @admin.register(WarehouseProduct)
 class WarehouseProductAdmin(admin.ModelAdmin):
     pass
+
 
 class ProductInline(admin.TabularInline):
     model = Product
@@ -63,10 +64,10 @@ class MovementItemAdmin(admin.ModelAdmin):
 class WarehouseAdmin(admin.ModelAdmin):
     pass
 
+
 class ReportItemInline(admin.TabularInline):
     model = ReportItem
     extra = 0
-
 
 
 @admin.register(Report)
@@ -87,4 +88,14 @@ class OrderAdmin(admin.ModelAdmin):
 
 @admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Banner)
+class BannerAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Catalog)
+class CatalogAdmin(admin.ModelAdmin):
     pass

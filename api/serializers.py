@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import (
     Status, UnitType, ProductCategory, Product,
     Warehouse, WarehouseProduct,
-    Income, IncomeItem, Outcome, OutcomeItem, Movement, MovementItem, Order, OrderItem
+    Income, IncomeItem, Outcome, OutcomeItem, Movement, MovementItem, Order, OrderItem, Banner, Catalog
 )
 
 
@@ -231,3 +231,31 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
     def get_unit_type_name(self, obj):
         return obj.product.get_unit_type_display()
+
+
+class BannerSerializer(serializers.ModelSerializer):
+    photo_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Banner
+        fields = ['id', 'photo', 'photo_url', 'content', 'status']
+
+    def get_photo_url(self, obj):
+        request = self.context.get('request')
+        if obj.photo and hasattr(obj.photo, 'url'):
+            return request.build_absolute_uri(obj.photo.url)
+        return None
+
+
+class CatalogSerializer(serializers.ModelSerializer):
+    photo_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Catalog
+        fields = ['id', 'name', 'price', 'discount_price', 'photo', 'photo_url', 'status', 'description']
+
+    def get_photo_url(self, obj):
+        request = self.context.get('request')
+        if obj.photo and hasattr(obj.photo, 'url'):
+            return request.build_absolute_uri(obj.photo.url)
+        return None

@@ -6,7 +6,7 @@ from api.views import StatusViewSet, UnitTypeViewSet, ProductCategoryViewSet, Pr
     LeastPopularProductsView, DealersSalesView, DealersCompareView, DealerAvgCheckView, OrdersAndReturnsView, \
     SalesGeographyView, TopCategoriesView, AssortmentStructureView, CentralStockView, StocksByWarehouseDealerView, \
     ForecastShortagesView, PlanVsActualView, PlanAchievementView, OrdersCountView, AverageOrderAmountView, \
-    MostOrderedProductsView, OrderImportView, IncomeImportView
+    MostOrderedProductsView, OrderImportView, IncomeImportView, BannerViewSet, CatalogViewSet
 
 router = routers.SimpleRouter()
 router.register(r'statuses', StatusViewSet)
@@ -23,6 +23,9 @@ router.register(r'movements', MovementViewSet)
 router.register(r'movement-items', MovementItemViewSet)
 router.register(r'orders', OrderViewSet)
 router.register(r'order-items', OrderItemViewSet)
+router.register(r'banners', BannerViewSet)
+router.register(r'catalogs', CatalogViewSet)
+
 
 urlpatterns = [
     path("reports/sales-volume/", SalesVolumeView.as_view(), name="report-sales-volume"),
