@@ -6,7 +6,7 @@ from user.models import User
 
 @admin.register(User)
 class CustomUserAdmin(admin.ModelAdmin):
-    list_display = 'status', 'email', 'is_superuser',
+    list_display = 'first_name', 'last_name', 'status', 'email', 'is_superuser',
     fieldsets = (
         # (None, {'fields': ('username', 'password')}),
         (_('Personal info'), {'fields': (
