@@ -175,6 +175,10 @@ SIMPLE_JWT = {
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+CORS_ALLOWED_ORIGINS = [
+    "https://grand-shtoriuz.uz",
+]
+
 CORS_ALLOW_HEADERS = [
     'accept',
     'accept-encoding',

@@ -10,7 +10,7 @@ class CustomUserAdmin(admin.ModelAdmin):
     fieldsets = (
         # (None, {'fields': ('username', 'password')}),
         (_('Personal info'), {'fields': (
-            'first_name', 'last_name', 'email', 'phone_number', 'role', 'status', 'tg_id')}),
+            'first_name', 'last_name', 'email', 'phone_number', 'password', 'role', 'status', 'tg_id')}),
 
         (_('Important dates'), {'fields': ('last_login',)}),
     )
