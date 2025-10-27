@@ -15,7 +15,7 @@ from api.models import Product, ReportItem
 # from bot.models import Task, EEUser
 # from ee_task import settings
 
-locale.setlocale(locale.LC_NUMERIC, 'ru_RU.utf8')
+# locale.setlocale(locale.LC_NUMERIC, 'ru_RU.utf8')
 
 
 def clear_int_string(int_string):
