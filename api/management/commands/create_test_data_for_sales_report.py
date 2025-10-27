@@ -45,7 +45,7 @@ class Command(BaseCommand):
             self.stderr.write(self.style.ERROR("Нет пользователя с id=1"))
             return
 
-        products = list(Product.objects.filter(id__gte=560, id__lte=800))
+        products = list(Product.objects.filter(id__gte=1, id__lte=276))
         if not products:
             self.stderr.write(self.style.ERROR("Нет продуктов с id в диапазоне 560–800"))
             return
