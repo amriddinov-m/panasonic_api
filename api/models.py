@@ -59,7 +59,7 @@ class Product(models.Model):
     unit_type = models.CharField(max_length=255, verbose_name='Ед. изм', choices=UnitType.choices, default=UnitType.pcs)
     price = models.DecimalField(decimal_places=2, max_digits=15, default=0, verbose_name='Цена')
     status = models.CharField(max_length=255, verbose_name='Статус', null=True)
-    comment = models.TextField(verbose_name='Коммент', null=True)
+    comment = models.TextField(verbose_name='Коммент', null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='Пользователь', null=True)
@@ -124,7 +124,7 @@ class Income(models.Model):
     updated = models.DateTimeField(auto_now=True)
     user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='Пользователь',
                              related_name='income_user')
-    comment = models.TextField(verbose_name='Коммент')
+    comment = models.TextField(verbose_name='Коммент', blank=True, null=True)
     status = models.CharField(max_length=255, verbose_name='Статус',
                               choices=Status.choices, default=Status.pending, null=True)
     total_amount = models.DecimalField(decimal_places=2, max_digits=10, default=0, verbose_name='Общая сумма')
@@ -145,7 +145,7 @@ class IncomeItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт')
     count = models.IntegerField(verbose_name='Кол-во')
     price = models.DecimalField(decimal_places=2, max_digits=15, verbose_name='Цена')
-    comment = models.TextField(verbose_name='Коммент', null=True)
+    comment = models.TextField(verbose_name='Коммент', null=True, blank=True)
     status = models.CharField(max_length=255, verbose_name='Статус', null=True)
     user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='Пользователь', null=True)
 
@@ -177,7 +177,7 @@ class Outcome(models.Model):
                               choices=Status.choices, default=Status.pending, null=True)
     user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='Пользователь',
                              related_name='outcome_user')
-    comment = models.TextField(verbose_name='Коммент')
+    comment = models.TextField(verbose_name='Коммент', blank=True, null=True)
     total_amount = models.DecimalField(decimal_places=2, max_digits=10, default=0, verbose_name='Общая сумма')
     warehouse = models.ForeignKey('Warehouse', on_delete=models.CASCADE, verbose_name='Склад', null=True)
     reason = models.CharField(verbose_name='Причина', choices=Reason.choices, max_length=255, default=Reason.order)
@@ -225,7 +225,7 @@ class Movement(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=255, verbose_name='Статус', choices=Status.choices, default=Status.pending)
-    comment = models.TextField(verbose_name='Коммент')
+    comment = models.TextField(verbose_name='Коммент', blank=True, null=True)
 
     def __str__(self):
         return f'{self.id}'
@@ -239,7 +239,7 @@ class MovementItem(models.Model):
     movement = models.ForeignKey(Movement, on_delete=models.CASCADE, verbose_name='Перемещение', related_name='items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт')
     count = models.IntegerField(verbose_name='Кол-во', default=0)
-    comment = models.TextField(verbose_name='Коммент')
+    comment = models.TextField(verbose_name='Коммент', blank=True, null=True)
     user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='Пользователь')
 
     def __str__(self):
@@ -264,7 +264,7 @@ class Order(models.Model):
     user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='Пользователь')
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    comment = models.TextField(verbose_name='Комментарии', null=True)
+    comment = models.TextField(verbose_name='Комментарии', null=True, blank=True)
     total_amount = models.DecimalField(decimal_places=2, max_digits=10, default=0, verbose_name='Общая сумма')
     status = models.CharField(max_length=255, verbose_name='Статус', choices=Status.choices, default=Status.pending)
 
@@ -285,7 +285,7 @@ class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name='Заказ', related_name='items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт')
     count = models.IntegerField(verbose_name='Кол-во', default=0)
-    comment = models.TextField(verbose_name='Коммент', null=True)
+    comment = models.TextField(verbose_name='Коммент', null=True, blank=True)
     price = models.DecimalField(decimal_places=2, max_digits=15, verbose_name='Цена')
     status = models.CharField(max_length=255, verbose_name='Статус', choices=Status.choices, default=Status.pending)
 
@@ -305,7 +305,7 @@ class Report(models.Model):
 
     client = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='Клиент')
     created = models.DateTimeField(auto_now_add=True)
-    comment = models.TextField(verbose_name='Коммент', null=True)
+    comment = models.TextField(verbose_name='Коммент', null=True, blank=True)
     status = models.CharField(max_length=255, verbose_name='Статус', choices=Status.choices, default=Status.pending)
     period = models.IntegerField(verbose_name='Период(месяц)', default=0)
 
