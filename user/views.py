@@ -43,14 +43,17 @@ class RegisterView(APIView):
         if serializer.is_valid():
             user = serializer.save()
 
-            # Генерация JWT токенов
             refresh = RefreshToken.for_user(user)
             return Response({
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
                 'user_id': user.pk,
+                'phone_number': user.phone_number,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
                 'role': user.role,
-                'is_admin': True if user.role == 'admin' else False
+                'status': user.status,
+                'is_admin': user.role == 'admin'
             }, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
